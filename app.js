@@ -129,7 +129,20 @@ function viewEmployee() {
 }
 
 function addDepartment() {
-
+inquirer
+    .prompt(
+        {
+            name: "dept",
+            type: "input",
+            message: "What is the name of the new department you'd like to add?"
+        }
+    ).then(function(answer) {
+        let query = "INSERT INTO department SET ?"
+        connection.query(query, { name: answer.dept }, function(err) {
+            if (err) throw err;
+            runQuestions();
+        });
+    });
 }
 
 function viewDepartments() {
@@ -141,5 +154,49 @@ function viewDepartments() {
         if (err) throw err;
         console.table(res);
         runQuestions();
+    });
+}
+
+function addRole() {
+    let query = "SELECT name FROM employee_managerDB.department";
+
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        let deptARR = [];
+
+        inquirer
+            .prompt([
+                {
+                    name: "dept",
+                    type: "rawlist",
+                    choices: function() {
+                        for(let i = 0; i < res.length; i++) {
+                            deptARR.push(res[i].name);
+                        }
+                    return deptARR;
+                    },
+                    message: "What department would you like to add the new role to?"
+                },
+                {
+                    name: "role",
+                    type: "input",
+                    message: "What is the name of the new role?"
+                },
+                {
+                    name: "salary",
+                    type: "number",
+                    message: "What is the base salary for the new role?"
+                }
+            ]).then(function(answer) {
+                let query = "INSERT INTO role SET ?";
+                connection.query(query, {
+                    title: answer.role,
+                    salary: answer.salary,
+                    department_id: deptARR.indexOf(answer.dept)+1
+                }, function(err) {
+                    if (err) throw err;
+                    runQuestions();
+                });
+            });
     });
 }
