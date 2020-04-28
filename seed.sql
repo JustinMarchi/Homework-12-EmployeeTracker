@@ -79,15 +79,15 @@ dep1.name AS Department,
 ro1.salary,
 concat(man1.first_name, ' ', man1.last_name) AS Manager_Name 
 FROM employee emp1
-JOIN role ro1 ON ro1.id = emp1.role_id 
-JOIN department dep1 ON ro1.department_id = dep1.id 
+INNER JOIN role ro1 ON ro1.id = emp1.role_id 
+INNER JOIN department dep1 ON ro1.department_id = dep1.id 
 LEFT JOIN employee man1 ON emp1.manager_id = man1.id
 JOIN employee emp2 ON ro1.id = emp2.role_id ORDER BY id;
 
 
 SELECT 
-name AS Department, sum(salary) AS Payroll_Total
+department.name AS Department, sum(salary) AS Payroll_Total
 FROM employee_managerdb.employee 
-JOIN employee_managerdb.ROLE ON role.id = employee.role_id AND employee.id IS NOT NULL 
-JOIN employee_managerdb.department ON role.department_id = department.id 
+INNER JOIN employee_managerdb.ROLE ON role.id = employee.role_id 
+INNER JOIN employee_managerdb.department ON role.department_id = department.id 
 GROUP BY department.name;

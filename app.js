@@ -119,8 +119,8 @@ function addEmployee() {
 function viewEmployee() {
     let query = "SELECT DISTINCT emp1.id, concat(emp1.first_name, ' ', emp1.last_name) AS Employee, ro1.title AS Job_Title, ";
     query += "dep1.name AS Department, ro1.salary, concat(man1.first_name, ' ', man1.last_name) AS Manager_Name FROM employee emp1 ";
-    query += "JOIN role ro1 ON ro1.id = emp1.role_id JOIN department dep1 ON ro1.department_id = dep1.id LEFT JOIN employee man1 ";
-    query += "ON emp1.manager_id = man1.id JOIN employee emp2 ON ro1.id = emp2.role_id ORDER BY id";
+    query += "INNER JOIN role ro1 ON ro1.id = emp1.role_id INNER JOIN department dep1 ON ro1.department_id = dep1.id LEFT JOIN employee man1 ";
+    query += "ON emp1.manager_id = man1.id INNER JOIN employee emp2 ON ro1.id = emp2.role_id ORDER BY id";
     connection.query(query, function(err, res) {
         if (err) throw err;
         console.table(res);
@@ -147,8 +147,8 @@ inquirer
 
 function viewDepartments() {
     let query = "SELECT name AS Department, sum(salary) AS Payroll_Total FROM employee_managerdb.employee "
-    query += "JOIN employee_managerdb.ROLE ON role.id = employee.role_id AND employee.id IS NOT NULL "
-    query += "JOIN employee_managerdb.department ON role.department_id = department.id GROUP BY department.name;";
+    query += "INNER JOIN employee_managerdb.ROLE ON role.id = employee.role_id "
+    query += "INNER JOIN employee_managerdb.department ON role.department_id = department.id GROUP BY department.name;";
 
     connection.query(query, function(err, res) {
         if (err) throw err;
@@ -199,4 +199,58 @@ function addRole() {
                 });
             });
     });
+}
+
+function viewRoles() {
+let query = "SELECT role.title AS Title, name AS Department, role.salary AS Salary FROM employee_managerDB.department ";
+query += "INNER JOIN employee_managerdb.role ON employee_managerdb.department.id = employee_managerDB.role.department_id;";
+
+connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    runQuestions();
+})
+}
+
+function updateRole() {
+    let query = "SELECT DISTINCT emp1.id, concat(emp1.first_name, ' ', emp1.last_name) AS Employee, ro1.title AS Job_Title, ";
+    query += "dep1.name AS Department, ro1.salary, concat(man1.first_name, ' ', man1.last_name) AS Manager_Name FROM employee emp1 ";
+    query += "INNER JOIN role ro1 ON ro1.id = emp1.role_id INNER JOIN department dep1 ON ro1.department_id = dep1.id LEFT JOIN employee man1 ";
+    query += "ON emp1.manager_id = man1.id INNER JOIN employee emp2 ON ro1.id = emp2.role_id ORDER BY id";
+
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        let empArr = [];
+        let roleArr = [];
+        inquirer
+            .prompt([
+                {
+                    name: "updatedEmp",
+                    type: "list",
+                    choices: function() {
+                        for (let i = 0; i < res.length; i++) {
+                            empArr.push(res[i].Employee)
+                        }
+                        return empArr;
+                    },
+                    message: "Which employee would you like to update role for?"
+                },
+                {
+                    name: "updatedRole",
+                    type: "list",
+                    choices: function() {
+                        for (let i = 0; i < res.length; i++) {
+                            roleArr.push(res[i].Job_Title)
+                        }
+                        return roleArr;
+                    },
+                    message: "Choose new role"
+                }
+            ])
+            .then(function(answer) {
+                connection.query("UPDATE role SET title = ? WHERE id = ?", [answer.updatedRole, empArr.indexOf(answer.updatedEmp)+1]);
+                runQuestions();
+            })
+    })
+
 }
