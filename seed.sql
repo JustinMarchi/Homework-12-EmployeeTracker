@@ -91,3 +91,8 @@ FROM employee_managerdb.employee
 INNER JOIN employee_managerdb.ROLE ON role.id = employee.role_id 
 INNER JOIN employee_managerdb.department ON role.department_id = department.id 
 GROUP BY department.name;
+
+SELECT 
+role.title AS Title, name AS Department, role.salary AS Salary
+FROM employee_managerDB.department 
+INNER JOIN employee_managerdb.role ON employee_managerdb.department.id = employee_managerDB.role.department_id
