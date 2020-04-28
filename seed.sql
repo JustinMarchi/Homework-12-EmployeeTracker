@@ -68,3 +68,18 @@ FROM employee
 	INNER JOIN role on role.id = employee.role_id
     INNER JOIN department on department.id = role.department_id
 ORDER BY employee.id;
+
+USE employee_managerDB;
+
+SELECT DISTINCT 
+E1.id,
+concat(E1.first_name, ' ', E1.last_name) AS Employee,
+R1.title AS Job_Title,
+D1.name AS Department,
+R1.salary,
+concat(M1.first_name, ' ', M1.last_name) AS Manager_Name 
+FROM employee E1 
+JOIN role R1 ON R1.id = E1.role_id 
+JOIN department D1 ON R1.department_id = D1.id 
+LEFT JOIN employee M1 ON E1.manager_id = M1.id
+JOIN employee E2 ON R1.id = E2.role_id ORDER BY id

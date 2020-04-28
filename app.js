@@ -7,7 +7,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: process.env.pass,
+    password: "Vermont#1",
     database: "employee_managerDB"
 });
 
@@ -31,7 +31,7 @@ function runQuestions() {
               "Add role",
               "Update employee role",
               "Exit"
-          ]
+            ],
       })
       .then(function(answer) {
           switch (answer.action) {
@@ -113,5 +113,17 @@ function addEmployee() {
               });
               runQuestions();
           });
+    });
+}
+
+function viewEmployee() {
+    let query = "SELECT DISTINCT emp1.id, concat(emp1.first_name, ' ', emp1.last_name) AS Employee, ro1.title AS Job_Title, ";
+    query += "dep1.name AS Department, ro1.salary, concat(man1.first_name, ' ', man1.last_name) AS Manager_Name FROM employee emp1 ";
+    query += "JOIN role ro1 ON ro1.id = emp1.role_id JOIN department dep1 ON ro1.department_id = dep1.id LEFT JOIN employee man1 ";
+    query += "ON emp1.manager_id = man1.id JOIN employee emp2 ON ro1.id = emp2.role_id ORDER BY id";
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        runQuestions();
     });
 }
