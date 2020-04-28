@@ -69,17 +69,25 @@ FROM employee
     INNER JOIN department on department.id = role.department_id
 ORDER BY employee.id;
 
-USE employee_managerDB;
+
 
 SELECT DISTINCT 
-E1.id,
-concat(E1.first_name, ' ', E1.last_name) AS Employee,
-R1.title AS Job_Title,
-D1.name AS Department,
-R1.salary,
-concat(M1.first_name, ' ', M1.last_name) AS Manager_Name 
-FROM employee E1 
-JOIN role R1 ON R1.id = E1.role_id 
-JOIN department D1 ON R1.department_id = D1.id 
-LEFT JOIN employee M1 ON E1.manager_id = M1.id
-JOIN employee E2 ON R1.id = E2.role_id ORDER BY id
+emp1.id,
+concat(emp1.first_name, ' ', emp1.last_name) AS Employee,
+ro1.title AS Job_Title,
+dep1.name AS Department,
+ro1.salary,
+concat(man1.first_name, ' ', man1.last_name) AS Manager_Name 
+FROM employee emp1
+JOIN role ro1 ON ro1.id = emp1.role_id 
+JOIN department dep1 ON ro1.department_id = dep1.id 
+LEFT JOIN employee man1 ON emp1.manager_id = man1.id
+JOIN employee emp2 ON ro1.id = emp2.role_id ORDER BY id;
+
+
+SELECT 
+name AS Department, sum(salary) AS Payroll_Total
+FROM employee_managerdb.employee 
+JOIN employee_managerdb.ROLE ON role.id = employee.role_id AND employee.id IS NOT NULL 
+JOIN employee_managerdb.department ON role.department_id = department.id 
+GROUP BY department.name;

@@ -127,3 +127,19 @@ function viewEmployee() {
         runQuestions();
     });
 }
+
+function addDepartment() {
+
+}
+
+function viewDepartments() {
+    let query = "SELECT name AS Department, sum(salary) AS Payroll_Total FROM employee_managerdb.employee "
+    query += "JOIN employee_managerdb.ROLE ON role.id = employee.role_id AND employee.id IS NOT NULL "
+    query += "JOIN employee_managerdb.department ON role.department_id = department.id GROUP BY department.name;";
+
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        runQuestions();
+    });
+}
